@@ -18,3 +18,9 @@ $ pip install -r requirements.txt
 $ cp .env.example .env
 $ uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
 ```
+
+## Run project with Docker
+**Required:** Installed Docker and docker-compose 
+```
+$ docker-compose up -d
+```
