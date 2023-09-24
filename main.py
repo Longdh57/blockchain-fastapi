@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from blockchain import blockchain
 from config import settings
+from shemas.sche_base import DataResponse
 
 node_identifier = str(uuid4()).replace('-', '')
 
@@ -32,7 +33,7 @@ def get_application() -> FastAPI:
 app = get_application()
 
 
-@app.get("/mine")
+@app.get("/mine", response_model=DataResponse)
 def mine():
     # We run the proof of work algorithm to get the next proof...
     last_block = blockchain.last_block
@@ -58,7 +59,7 @@ def mine():
         'proof': block['proof'],
         'previous_hash': block['previous_hash'],
     }
-    return response, 200
+    return DataResponse().success_response(data=response)
 
 
 class NewTransactionRequest(BaseModel):
@@ -67,20 +68,20 @@ class NewTransactionRequest(BaseModel):
     amount: float
 
 
-@app.post('/transactions/new')
+@app.post('/transactions/new', response_model=DataResponse)
 def new_transaction(req_data: NewTransactionRequest):
     index = blockchain.new_transaction(req_data.sender, req_data.recipient, req_data.amount)
     response = {'message': f'Transaction will be added to Block {index}'}
-    return response, 201
+    return DataResponse().success_response(data=response)
 
 
-@app.get('/chain')
+@app.get('/chain', response_model=DataResponse)
 def full_chain():
     response = {
         'chain': blockchain.chain,
         'length': len(blockchain.chain),
     }
-    return response, 200
+    return DataResponse().success_response(data=response)
 
 
 if __name__ == "__main__":
